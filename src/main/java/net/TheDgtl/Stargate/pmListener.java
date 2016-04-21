@@ -3,11 +3,12 @@ package net.TheDgtl.Stargate;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-public class pmListener implements PluginMessageListener {
+public final class pmListener implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player unused, byte[] message) {
@@ -50,7 +51,7 @@ public class pmListener implements PluginMessageListener {
             Portal dest = Portal.getBungeeGate(destination);
             // Specified an invalid gate. For now we'll just let them connect at their current location
             if (dest == null) {
-                Stargate.log.info("[Stargate] Bungee gate " + destination + " does not exist");
+                Stargate.log.log(Level.INFO, "[Stargate] Bungee gate {0} does not exist", destination);
                 return;
             }
             dest.teleport(player, dest, null);

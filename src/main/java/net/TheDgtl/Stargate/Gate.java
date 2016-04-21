@@ -38,9 +38,9 @@ public class Gate {
     public static final int ENTRANCE = -2;
     public static final int CONTROL = -3;
     public static final int EXIT = -4;
-    private static HashMap<String, Gate> gates = new HashMap<String, Gate>();
-    private static HashMap<Integer, ArrayList<Gate>> controlBlocks = new HashMap<Integer, ArrayList<Gate>>();
-    private static HashSet<Integer> frameBlocks = new HashSet<Integer>();
+    private static HashMap<String, Gate> gates = new HashMap<>();
+    private static HashMap<Integer, ArrayList<Gate>> controlBlocks = new HashMap<>();
+    private static HashSet<Integer> frameBlocks = new HashSet<>();
 
     private String filename;
     private Character[][] layout;
@@ -50,7 +50,7 @@ public class Gate {
     private RelativeBlockVector[] border = new RelativeBlockVector[0];
     private RelativeBlockVector[] controls = new RelativeBlockVector[0];
     private RelativeBlockVector exitBlock = null;
-    private HashMap<RelativeBlockVector, Integer> exits = new HashMap<RelativeBlockVector, Integer>();
+    private HashMap<RelativeBlockVector, Integer> exits = new HashMap<>();
     private int portalBlockOpen = Material.PORTAL.getId();
     private int portalBlockClosed = Material.AIR.getId();
 
@@ -70,9 +70,9 @@ public class Gate {
     }
 
     private void populateCoordinates() {
-        ArrayList<RelativeBlockVector> entranceList = new ArrayList<RelativeBlockVector>();
-        ArrayList<RelativeBlockVector> borderList = new ArrayList<RelativeBlockVector>();
-        ArrayList<RelativeBlockVector> controlList = new ArrayList<RelativeBlockVector>();
+        ArrayList<RelativeBlockVector> entranceList = new ArrayList<>();
+        ArrayList<RelativeBlockVector> borderList = new ArrayList<>();
+        ArrayList<RelativeBlockVector> controlList = new ArrayList<>();
         RelativeBlockVector[] relativeExits = new RelativeBlockVector[layout[0].length];
         int[] exitDepths = new int[layout[0].length];
         RelativeBlockVector lastExit = null;
@@ -165,7 +165,7 @@ public class Gate {
 
             bw.close();
         } catch (IOException ex) {
-            Stargate.log.log(Level.SEVERE, "Could not save Gate " + filename + " - " + ex.getMessage());
+            Stargate.log.log(Level.SEVERE, "Could not save Gate {0} - {1}", new Object[]{filename, ex.getMessage()});
         }
     }
 
@@ -330,11 +330,11 @@ public class Gate {
     public static Gate loadGate(File file) {
         Scanner scanner = null;
         boolean designing = false;
-        ArrayList<ArrayList<Character>> design = new ArrayList<ArrayList<Character>>();
-        HashMap<Character, Integer> types = new HashMap<Character, Integer>();
-        HashMap<Character, Integer> metadata = new HashMap<Character, Integer>();
-        HashMap<String, String> config = new HashMap<String, String>();
-        HashSet<Integer> frameTypes = new HashSet<Integer>();
+        ArrayList<ArrayList<Character>> design = new ArrayList<>();
+        HashMap<Character, Integer> types = new HashMap<>();
+        HashMap<Character, Integer> metadata = new HashMap<>();
+        HashMap<String, String> config = new HashMap<>();
+        HashSet<Integer> frameTypes = new HashSet<>();
         int cols = 0;
 
         // Init types map
@@ -349,7 +349,7 @@ public class Gate {
                 String line = scanner.nextLine();
 
                 if (designing) {
-                    ArrayList<Character> row = new ArrayList<Character>();
+                    ArrayList<Character> row = new ArrayList<>();
 
                     if (line.length() > cols) {
                         cols = line.length();
@@ -357,7 +357,7 @@ public class Gate {
 
                     for (Character symbol : line.toCharArray()) {
                         if ((symbol.equals('?')) || (!types.containsKey(symbol))) {
-                            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Unknown symbol '" + symbol + "' in diagram");
+                            Stargate.log.log(Level.SEVERE, "Could not load Gate {0} - Unknown symbol ''{1}'' in diagram", new Object[]{file.getName(), symbol});
                             return null;
                         }
                         row.add(symbol);
@@ -390,7 +390,7 @@ public class Gate {
                 }
             }
         } catch (Exception ex) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Invalid block ID given");
+            Stargate.log.log(Level.SEVERE, "Could not load Gate {0} - Invalid block ID given", file.getName());
             return null;
         } finally {
             if (scanner != null) {
@@ -425,7 +425,7 @@ public class Gate {
         gate.toOwner = (config.containsKey("toowner") ? Boolean.valueOf(config.get("toowner")) : iConomyHandler.toOwner);
 
         if (gate.getControls().length != 2) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gates must have exactly 2 control points.");
+            Stargate.log.log(Level.SEVERE, "Could not load Gate {0} - Gates must have exactly 2 control points.",  file.getName());
             return null;
         }
 
@@ -479,13 +479,13 @@ public class Gate {
             {'-', '.', '.', '-'},
             {'X', '*', '.', 'X'},
             {' ', 'X', 'X', ' '},};
-        HashMap<Character, Integer> types = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> types = new HashMap<>();
         types.put('.', ENTRANCE);
         types.put('*', EXIT);
         types.put(' ', ANYTHING);
         types.put('X', Obsidian);
         types.put('-', Obsidian);
-        HashMap<Character, Integer> metadata = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> metadata = new HashMap<>();
 
         Gate gate = new Gate("nethergate.gate", layout, types, metadata);
         gate.save(gateFolder);
@@ -521,6 +521,7 @@ public class Gate {
 
     static class StargateFilenameFilter implements FilenameFilter {
 
+        @Override
         public boolean accept(File dir, String name) {
             return name.endsWith(".gate");
         }

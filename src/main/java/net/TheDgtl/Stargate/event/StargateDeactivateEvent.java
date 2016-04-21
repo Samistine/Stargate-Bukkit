@@ -25,6 +25,7 @@ public class StargateDeactivateEvent extends StargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
+    @Override
     public HandlerList getHandlers() {
         return handlers;
     }

@@ -52,18 +52,18 @@ import org.bukkit.util.Vector;
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-public class Portal {
+public final class Portal {
     // Static variables used to store portal lists
 
-    private static final HashMap<Blox, Portal> lookupBlocks = new HashMap<Blox, Portal>();
-    private static final HashMap<Blox, Portal> lookupEntrances = new HashMap<Blox, Portal>();
-    private static final HashMap<Blox, Portal> lookupControls = new HashMap<Blox, Portal>();
-    private static final ArrayList<Portal> allPortals = new ArrayList<Portal>();
-    private static final HashMap<String, ArrayList<String>> allPortalsNet = new HashMap<String, ArrayList<String>>();
-    private static final HashMap<String, HashMap<String, Portal>> lookupNamesNet = new HashMap<String, HashMap<String, Portal>>();
+    private static final HashMap<Blox, Portal> lookupBlocks = new HashMap<>();
+    private static final HashMap<Blox, Portal> lookupEntrances = new HashMap<>();
+    private static final HashMap<Blox, Portal> lookupControls = new HashMap<>();
+    private static final ArrayList<Portal> allPortals = new ArrayList<>();
+    private static final HashMap<String, ArrayList<String>> allPortalsNet = new HashMap<>();
+    private static final HashMap<String, HashMap<String, Portal>> lookupNamesNet = new HashMap<>();
 
     // A list of Bungee gates
-    private static final HashMap<String, Portal> bungeePortals = new HashMap<String, Portal>();
+    private static final HashMap<String, Portal> bungeePortals = new HashMap<>();
 
     // Gate location block info
     private Blox topLeft;
@@ -102,7 +102,7 @@ public class Portal {
     // In-use information
     private Player player;
     private Player activePlayer;
-    private ArrayList<String> destinations = new ArrayList<String>();
+    private ArrayList<String> destinations = new ArrayList<>();
     private boolean isOpen = false;
     private long openTime;
 
@@ -260,7 +260,7 @@ public class Portal {
     public Portal getDestination(Player player) {
         if (isRandom()) {
             destinations = getDestinations(player, getNetwork());
-            if (destinations.size() == 0) {
+            if (destinations.isEmpty()) {
                 destinations.clear();
                 return null;
             }
@@ -533,6 +533,7 @@ public class Portal {
             vehicle.remove();
             passenger.teleport(exit);
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, new Runnable() {
+                @Override
                 public void run() {
                     v.setPassenger(passenger);
                     v.setVelocity(newVelocity);
@@ -557,7 +558,7 @@ public class Portal {
             int back = (isBackwards()) ? -1 : 1;
             loc = exit.modRelativeLoc(0D, 0D, 1D, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
         } else {
-            Stargate.log.log(Level.WARNING, "[Stargate] Missing destination point in .gate file " + gate.getFilename());
+            Stargate.log.log(Level.WARNING, "[Stargate] Missing destination point in .gate file {0}", gate.getFilename());
         }
 
         if (loc != null) {
@@ -596,7 +597,7 @@ public class Portal {
     }
 
     public ArrayList<String> getDestinations(Player player, String network) {
-        ArrayList<String> destinations = new ArrayList<String>();
+        ArrayList<String> destinations = new ArrayList<>();
         for (String dest : allPortalsNet.get(network.toLowerCase())) {
             Portal portal = getByName(dest, network);
             // Check if dest is a random gate
@@ -695,7 +696,7 @@ public class Portal {
             activate = true;
         }
 
-        if (destinations.size() == 0) {
+        if (destinations.isEmpty()) {
             Stargate.sendMessage(player, Stargate.getString("destEmpty"));
             return;
         }
@@ -1342,7 +1343,7 @@ public class Portal {
 
             bw.close();
         } catch (Exception e) {
-            Stargate.log.log(Level.SEVERE, "Exception while writing stargates to " + loc + ": " + e);
+            Stargate.log.log(Level.SEVERE, "Exception while writing stargates to {0}: {1}", new Object[]{loc, e});
         }
     }
 
@@ -1373,13 +1374,13 @@ public class Portal {
                     }
                     String[] split = line.split(":");
                     if (split.length < 8) {
-                        Stargate.log.info("[Stargate] Invalid line - " + l);
+                        Stargate.log.log(Level.INFO, "[Stargate] Invalid line - {0}", l);
                         continue;
                     }
                     String name = split[0];
                     Blox sign = new Blox(world, split[1]);
                     if (!(sign.getBlock().getState() instanceof Sign)) {
-                        Stargate.log.info("[Stargate] Sign on line " + l + " doesn't exist. BlockType = " + sign.getBlock().getType());
+                        Stargate.log.log(Level.INFO, "[Stargate] Sign on line {0} doesn''t exist. BlockType = {1}", new Object[]{l, sign.getBlock().getType()});
                         continue;
                     }
                     Blox button = (split[2].length() > 0) ? new Blox(world, split[2]) : null;
@@ -1389,7 +1390,7 @@ public class Portal {
                     Blox topLeft = new Blox(world, split[6]);
                     Gate gate = (split[7].contains(";")) ? Gate.getGateByName("nethergate.gate") : Gate.getGateByName(split[7]);
                     if (gate == null) {
-                        Stargate.log.info("[Stargate] Gate layout on line " + l + " does not exist [" + split[7] + "]");
+                        Stargate.log.log(Level.INFO, "[Stargate] Gate layout on line {0} does not exist [{1}]", new Object[]{l, split[7]});
                         continue;
                     }
 
@@ -1434,7 +1435,7 @@ public class Portal {
                             }
                             portal.unregister(false);
                             iter.remove();
-                            Stargate.log.info("[Stargate] Destroying stargate at " + portal.toString());
+                            Stargate.log.log(Level.INFO, "[Stargate] Destroying stargate at {0}", portal.toString());
                             continue;
                         } else {
                             portal.drawSign();
@@ -1463,13 +1464,13 @@ public class Portal {
                         dest.drawSign();
                     }
                 }
-                Stargate.log.info("[Stargate] {" + world.getName() + "} Loaded " + portalCount + " stargates with " + OpenCount + " set as always-on");
+                Stargate.log.log(Level.INFO, "[Stargate] '{'{0}'}' Loaded {1} stargates with {2} set as always-on", new Object[]{world.getName(), portalCount, OpenCount});
             } catch (Exception e) {
-                Stargate.log.log(Level.SEVERE, "Exception while reading stargates from " + db.getName() + ": " + l);
+                Stargate.log.log(Level.SEVERE, "Exception while reading stargates from {0}: {1}", new Object[]{db.getName(), l});
                 e.printStackTrace();
             }
         } else {
-            Stargate.log.info("[Stargate] {" + world.getName() + "} No stargates for world ");
+            Stargate.log.log(Level.INFO, "[Stargate] '{'{0}'}' No stargates for world ", world.getName());
         }
     }
 

@@ -47,7 +47,7 @@ import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class MetricsLite {
+public final class MetricsLite {
 
     /**
      * The current revision number

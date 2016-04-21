@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Stargate - A portal plugin for Bukkit Copyright (C) 2011, 2012 Steven
@@ -85,8 +86,8 @@ public class LangLoader {
     // with missing lines from the in-JAR files
     private void updateLanguage(String lang) {
         // Load the current language file
-        ArrayList<String> keyList = new ArrayList<String>();
-        ArrayList<String> valList = new ArrayList<String>();
+        ArrayList<String> keyList = new ArrayList<>();
+        ArrayList<String> valList = new ArrayList<>();
 
         HashMap<String, String> curLang = load(lang);
 
@@ -163,7 +164,7 @@ public class LangLoader {
             }
         }
         if (updated) {
-            Stargate.log.info("[Stargate] Your language file (" + lang + ".txt) has been updated");
+            Stargate.log.log(Level.INFO, "[Stargate] Your language file ({0}.txt) has been updated", lang);
         }
     }
 
@@ -172,7 +173,7 @@ public class LangLoader {
     }
 
     private HashMap<String, String> load(String lang, InputStream is) {
-        HashMap<String, String> strings = new HashMap<String, String>();
+        HashMap<String, String> strings = new HashMap<>();
         FileInputStream fis = null;
         InputStreamReader isr = null;
         try {

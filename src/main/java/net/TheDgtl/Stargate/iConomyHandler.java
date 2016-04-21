@@ -125,10 +125,7 @@ public class iConomyHandler {
         if (economy != null) {
             return true;
         }
-        if (register != null && Methods.getMethod() != null) {
-            return true;
-        }
-        return false;
+        return register != null && Methods.getMethod() != null;
     }
 
     public static String format(int amt) {

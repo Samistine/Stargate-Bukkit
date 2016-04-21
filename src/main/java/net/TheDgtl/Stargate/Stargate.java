@@ -78,7 +78,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 @SuppressWarnings("unused")
-public class Stargate extends JavaPlugin {
+public final class Stargate extends JavaPlugin {
 
     public static Logger log;
     private FileConfiguration newConfig;
@@ -110,21 +110,23 @@ public class Stargate extends JavaPlugin {
     public static boolean debug = false;
     public static boolean permDebug = false;
 
-    public static ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<Portal>();
-    public static ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<Portal>();
+    public static ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
+    public static ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
 
     // Used for populating gate open/closed material.
-    public static Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<BloxPopulator>();
+    public static Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<>();
 
     // HashMap of player names for Bungee support
-    public static Map<String, String> bungeeQueue = new HashMap<String, String>();
+    public static Map<String, String> bungeeQueue = new HashMap<>();
 
+    @Override
     public void onDisable() {
         Portal.closeAllGates();
         Portal.clearGates();
         getServer().getScheduler().cancelTasks(this);
     }
 
+    @Override
     public void onEnable() {
         PluginDescriptionFile pdfFile = this.getDescription();
         pm = getServer().getPluginManager();
@@ -138,8 +140,7 @@ public class Stargate extends JavaPlugin {
         gateFolder = getDataFolder().getPath().replaceAll("\\\\", "/") + "/gates/";
         langFolder = getDataFolder().getPath().replaceAll("\\\\", "/") + "/lang/";
 
-        log.info(pdfFile.getName() + " v." + pdfFile.getVersion() + " is enabled.");
-
+        //log.log(Level.INFO, "{0} v.{1} is enabled.", new Object[]{pdfFile.getName(), pdfFile.getVersion()});
         // Register events before loading gates to stop weird things happening.
         pm.registerEvents(new pListener(), this);
         pm.registerEvents(new bListener(), this);
@@ -166,7 +167,7 @@ public class Stargate extends JavaPlugin {
         // Check to see if iConomy is loaded yet.
         if (iConomyHandler.setupeConomy(pm)) {
             if (iConomyHandler.register != null) {
-                log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
+                log.log(Level.INFO, "[Stargate] Register v{0} found", iConomyHandler.register.getDescription().getVersion());
             }
             if (iConomyHandler.economy != null) {
                 log.info("[Stargate] Vault v" /*+ iConomyHandler.vault.getDescription().getVersion()*/ + " found");
@@ -186,7 +187,7 @@ public class Stargate extends JavaPlugin {
                 log.info("[Stargate] Plugin metrics not enabled.");
             }
         } catch (IOException ex) {
-            log.warning("[Stargate] Error enabling plugin metrics: " + ex);
+            log.log(Level.WARNING, "[Stargate] Error enabling plugin metrics: {0}", ex);
         }
     }
 
@@ -243,7 +244,7 @@ public class Stargate extends JavaPlugin {
         if (Gate.getGateByName("nethergate.gate") == null || Gate.getGateByName("nethergate.gate").getExit() == null) {
             Gate.populateDefaults(gateFolder);
         }
-        log.info("[Stargate] Loaded " + Gate.getGateCount() + " gate layouts");
+        log.log(Level.INFO, "[Stargate] Loaded {0} gate layouts", Gate.getGateCount());
         for (World world : getServer().getWorlds()) {
             Portal.loadAllGates(world);
         }
@@ -274,7 +275,7 @@ public class Stargate extends JavaPlugin {
                 newDir.mkdirs();
             }
             for (File file : oldDir.listFiles(new Gate.StargateFilenameFilter())) {
-                Stargate.log.info("[Stargate] Migrating existing gate " + file.getName());
+                Stargate.log.log(Level.INFO, "[Stargate] Migrating existing gate {0}", file.getName());
                 file.renameTo(new File(gateFolder, file.getName()));
             }
         }
@@ -282,9 +283,9 @@ public class Stargate extends JavaPlugin {
 
     public static void debug(String rout, String msg) {
         if (Stargate.debug) {
-            log.info("[Stargate::" + rout + "] " + msg);
+            log.log(Level.INFO, "[Stargate::{0}] {1}", new Object[]{rout, msg});
         } else {
-            log.log(Level.FINEST, "[Stargate::" + rout + "] " + msg);
+            log.log(Level.FINEST, "[Stargate::{0}] {1}", new Object[]{rout, msg});
         }
     }
 
@@ -410,16 +411,10 @@ public class Stargate extends JavaPlugin {
         // Can use all Stargate player features or access all worlds
         if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.world")) {
             // Do a deep check to see if the player lacks this specific world node
-            if (!hasPermDeep(player, "stargate.world." + world)) {
-                return false;
-            }
-            return true;
+            return hasPermDeep(player, "stargate.world." + world);
         }
         // Can access dest world
-        if (hasPerm(player, "stargate.world." + world)) {
-            return true;
-        }
-        return false;
+        return hasPerm(player, "stargate.world." + world);
     }
 
     /*
@@ -429,10 +424,7 @@ public class Stargate extends JavaPlugin {
         // Can user all Stargate player features, or access all networks
         if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.network")) {
             // Do a deep check to see if the player lacks this specific network node
-            if (!hasPermDeep(player, "stargate.network." + network)) {
-                return false;
-            }
-            return true;
+            return hasPermDeep(player, "stargate.network." + network);
         }
         // Can access this network
         if (hasPerm(player, "stargate.network." + network)) {
@@ -443,10 +435,7 @@ public class Stargate extends JavaPlugin {
         if (playerName.length() > 11) {
             playerName = playerName.substring(0, 11);
         }
-        if (network.equals(playerName) && hasPerm(player, "stargate.create.personal")) {
-            return true;
-        }
-        return false;
+        return network.equals(playerName) && hasPerm(player, "stargate.create.personal");
     }
 
     /*
@@ -455,17 +444,11 @@ public class Stargate extends JavaPlugin {
     public static boolean canAccessServer(Player player, String server) {
         // Can user all Stargate player features, or access all servers
         if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.servers")) {
-            // Do a deep check to see if the player lacks this specific server node
-            if (!hasPermDeep(player, "stargate.server." + server)) {
-                return false;
-            }
-            return true;
+            // Do a deep check to see if the player lacks this specific server node  
+            return hasPermDeep(player, "stargate.server." + server);
         }
         // Can access this server
-        if (hasPerm(player, "stargate.server." + server)) {
-            return true;
-        }
-        return false;
+        return hasPerm(player, "stargate.server." + server);
     }
 
     /*
@@ -512,10 +495,7 @@ public class Stargate extends JavaPlugin {
             return true;
         }
         // The player is the owner of the gate
-        if (portal.getOwner().equalsIgnoreCase(player.getName())) {
-            return true;
-        }
-        return false;
+        return portal.getOwner().equalsIgnoreCase(player.getName());
     }
 
     /*
@@ -527,10 +507,7 @@ public class Stargate extends JavaPlugin {
             return true;
         }
         // The player is an admin with the ability to use private gates
-        if (hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.private")) {
-            return true;
-        }
-        return false;
+        return hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.private");
     }
 
     /*
@@ -542,10 +519,7 @@ public class Stargate extends JavaPlugin {
             return true;
         }
         // Check if they can use this specific option
-        if (hasPerm(player, "stargate.option." + option)) {
-            return true;
-        }
-        return false;
+        return hasPerm(player, "stargate.option." + option);
     }
 
     /*
@@ -559,17 +533,10 @@ public class Stargate extends JavaPlugin {
         // Check for all network create permission
         if (hasPerm(player, "stargate.create.network")) {
             // Do a deep check to see if the player lacks this specific network node
-            if (!hasPermDeep(player, "stargate.create.network." + network)) {
-                return false;
-            }
-            return true;
+            return hasPermDeep(player, "stargate.create.network." + network);
         }
         // Check for this specific network
-        if (hasPerm(player, "stargate.create.network." + network)) {
-            return true;
-        }
-
-        return false;
+        return hasPerm(player, "stargate.create.network." + network);
     }
 
     /*
@@ -581,10 +548,7 @@ public class Stargate extends JavaPlugin {
             return true;
         }
         // Check for personal
-        if (hasPerm(player, "stargate.create.personal")) {
-            return true;
-        }
-        return false;
+        return hasPerm(player, "stargate.create.personal");
     }
 
     /*
@@ -598,17 +562,10 @@ public class Stargate extends JavaPlugin {
         // Check for all gate create permissions
         if (hasPerm(player, "stargate.create.gate")) {
             // Do a deep check to see if the player lacks this specific gate node
-            if (!hasPermDeep(player, "stargate.create.gate." + gate)) {
-                return false;
-            }
-            return true;
+            return hasPermDeep(player, "stargate.create.gate." + gate);
         }
         // Check for this specific gate
-        if (hasPerm(player, "stargate.create.gate." + gate)) {
-            return true;
-        }
-
-        return false;
+        return hasPerm(player, "stargate.create.gate." + gate);
     }
 
     /*
@@ -623,20 +580,14 @@ public class Stargate extends JavaPlugin {
         // Check for all network destroy permission
         if (hasPerm(player, "stargate.destroy.network")) {
             // Do a deep check to see if the player lacks permission for this network node
-            if (!hasPermDeep(player, "stargate.destroy.network." + network)) {
-                return false;
-            }
-            return true;
+            return hasPermDeep(player, "stargate.destroy.network." + network);
         }
         // Check for this specific network
         if (hasPerm(player, "stargate.destroy.network." + network)) {
             return true;
         }
         // Check for personal gate
-        if (player.getName().equalsIgnoreCase(portal.getOwner()) && hasPerm(player, "stargate.destroy.personal")) {
-            return true;
-        }
-        return false;
+        return player.getName().equalsIgnoreCase(portal.getOwner()) && hasPerm(player, "stargate.destroy.personal");
     }
 
     /*
@@ -725,7 +676,7 @@ public class Stargate extends JavaPlugin {
 
     private Plugin checkPlugin(Plugin plugin) {
         if (plugin != null && plugin.isEnabled()) {
-            log.info("[Stargate] Found " + plugin.getDescription().getName() + " (v" + plugin.getDescription().getVersion() + ")");
+            log.log(Level.INFO, "[Stargate] Found {0} (v{1})", new Object[]{plugin.getDescription().getName(), plugin.getDescription().getVersion()});
             return plugin;
         }
         return null;
@@ -1169,6 +1120,7 @@ public class Stargate extends JavaPlugin {
             Stargate.sendMessage(player, Stargate.getString("createMsg"), false);
             Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
             Stargate.server.getScheduler().scheduleSyncDelayedTask(stargate, new Runnable() {
+                @Override
                 public void run() {
                     portal.drawSign();
                 }
@@ -1198,7 +1150,7 @@ public class Stargate extends JavaPlugin {
             if (!Stargate.canDestroy(player, portal)) {
                 denyMsg = "Permission Denied"; // TODO: Change to Stargate.getString()
                 deny = true;
-                Stargate.log.info("[Stargate] " + player.getName() + " tried to destroy gate");
+                Stargate.log.log(Level.INFO, "[Stargate] {0} tried to destroy gate", player.getName());
             }
 
             int cost = Stargate.getDestroyCost(player, portal.getGate());
@@ -1433,7 +1385,7 @@ public class Stargate extends JavaPlugin {
         @EventHandler
         public void onPluginEnable(PluginEnableEvent event) {
             if (iConomyHandler.setupRegister(event.getPlugin())) {
-                log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
+                log.log(Level.INFO, "[Stargate] Register v{0} found", iConomyHandler.register.getDescription().getVersion());
             }
             if (iConomyHandler.setupVault(event.getPlugin())) {
                 //log.info("[Stargate] Vault v" + iConomyHandler.vault.getDescription().getVersion() + " found");
@@ -1450,6 +1402,7 @@ public class Stargate extends JavaPlugin {
 
     private class BlockPopulatorThread implements Runnable {
 
+        @Override
         public void run() {
             long sTime = System.nanoTime();
             while (System.nanoTime() - sTime < 50000000) {
@@ -1465,6 +1418,7 @@ public class Stargate extends JavaPlugin {
 
     private class SGThread implements Runnable {
 
+        @Override
         public void run() {
             long time = System.currentTimeMillis() / 1000;
             // Close open portals
@@ -1544,7 +1498,7 @@ public class Stargate extends JavaPlugin {
                 if (iConomyHandler.useiConomy && iConomyHandler.register == null && iConomyHandler.economy == null) {
                     if (iConomyHandler.setupeConomy(pm)) {
                         if (iConomyHandler.register != null) {
-                            log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
+                            log.log(Level.INFO, "[Stargate] Register v{0} found", iConomyHandler.register.getDescription().getVersion());
                         }
                         if (iConomyHandler.economy != null) {
                             log.info("[Stargate] Vault v" /*+ iConomyHandler.vault.getDescription().getVersion()*/ + " found");
