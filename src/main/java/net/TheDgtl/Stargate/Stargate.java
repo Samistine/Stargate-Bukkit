@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -168,7 +169,7 @@ public class Stargate extends JavaPlugin {
 			if (iConomyHandler.register != null)
 				log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
 			if (iConomyHandler.economy != null)
-				log.info("[Stargate] Vault v" + iConomyHandler.vault.getDescription().getVersion() + " found");
+				log.info("[Stargate] Vault v" /*+ iConomyHandler.vault.getDescription().getVersion()*/ + " found");
         }
 		
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new SGThread(), 0L, 100L);
@@ -899,7 +900,7 @@ public class Stargate extends JavaPlugin {
 			Block block = null;
 			if (event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_AIR) {
 				try {
-					block = player.getTargetBlock(null, 5);
+					block = player.getTargetBlock(Collections.singleton(Material.AIR), 5);
 				} catch (IllegalStateException ex) {
 					// We can safely ignore this exception, it only happens in void or max height
 					return;
@@ -1278,7 +1279,7 @@ public class Stargate extends JavaPlugin {
 				log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
 			}
 			if (iConomyHandler.setupVault(event.getPlugin())) {
-				log.info("[Stargate] Vault v" + iConomyHandler.vault.getDescription().getVersion() + " found");
+				//log.info("[Stargate] Vault v" + iConomyHandler.vault.getDescription().getVersion() + " found");
 			}
 		}
 		
@@ -1375,11 +1376,11 @@ public class Stargate extends JavaPlugin {
 						if (iConomyHandler.register != null)
 							log.info("[Stargate] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
 						if (iConomyHandler.economy != null)
-							log.info("[Stargate] Vault v" + iConomyHandler.vault.getDescription().getVersion() + " found");
+							log.info("[Stargate] Vault v" /*+ iConomyHandler.vault.getDescription().getVersion()*/ + " found");
 			        }
 				}
 				if (!iConomyHandler.useiConomy) {
-					iConomyHandler.vault = null;
+					iConomyHandler.vault = false;
 					iConomyHandler.register = null;
 					iConomyHandler.economy = null;
 				}

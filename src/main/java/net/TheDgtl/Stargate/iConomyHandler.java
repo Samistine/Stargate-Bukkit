@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate;
 
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.plugin.Plugin;
@@ -33,7 +32,7 @@ import com.nijikokun.register.payment.Methods;
 public class iConomyHandler {
 	public static boolean useiConomy = false;
 	public static Register register = null;
-	public static Vault vault = null;
+	public static boolean vault = false;
 	public static Economy economy = null;
 	
 	public static int useCost = 0;
@@ -149,17 +148,17 @@ public class iConomyHandler {
 		if (!p.getDescription().getName().equals("Vault")) return false;
 		
 		RegisteredServiceProvider<Economy> economyProvider = Stargate.server.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-        	vault = (Vault)p;
-            economy = economyProvider.getProvider();
-        }
+		if (economyProvider != null) {
+			vault = true;
+			economy = economyProvider.getProvider();
+		}
 
-        return (economy != null);
+        	return (economy != null);
 	}
 	
 	public static boolean setupRegister(Plugin p) {
 		if (!useiConomy) return false;
-		if (vault != null) return false;
+		if (vault != false) return false;
 		if (p == null || !p.isEnabled()) return false;
 		if (!p.getDescription().getName().equals("Register")) return false;
 		register = (Register)p;
@@ -173,7 +172,7 @@ public class iConomyHandler {
 		}
 		if (p.equals(vault)) {
 			economy = null;
-			vault = null;
+			vault = false;
 			return true;
 		}
 		return false;
