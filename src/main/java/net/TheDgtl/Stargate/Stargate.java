@@ -235,9 +235,7 @@ public final class Stargate extends JavaPlugin {
 
     public void reloadGates() {
         // Close all gates prior to reloading
-        for (Portal p : openList) {
-            p.close(true);
-        }
+        openList.stream().forEach((p) -> p.close(true));
 
         Gate.loadGates(gateFolder);
         // Replace nethergate.gate if it doesn't have an exit point.
@@ -245,9 +243,7 @@ public final class Stargate extends JavaPlugin {
             Gate.populateDefaults(gateFolder);
         }
         log.log(Level.INFO, "[Stargate] Loaded {0} gate layouts", Gate.getGateCount());
-        for (World world : getServer().getWorlds()) {
-            Portal.loadAllGates(world);
-        }
+        getServer().getWorlds().stream().forEach(Portal::loadAllGates);
     }
 
     private void migrate() {
@@ -1119,12 +1115,7 @@ public final class Stargate extends JavaPlugin {
 
             Stargate.sendMessage(player, Stargate.getString("createMsg"), false);
             Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(stargate, new Runnable() {
-                @Override
-                public void run() {
-                    portal.drawSign();
-                }
-            }, 1);
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(stargate, portal::drawSign, 1);
         }
 
         // Switch to HIGHEST priority so as to come after block protection plugins (Hopefully)
@@ -1400,7 +1391,7 @@ public final class Stargate extends JavaPlugin {
         }
     }
 
-    private class BlockPopulatorThread implements Runnable {
+    private static class BlockPopulatorThread implements Runnable {
 
         @Override
         public void run() {
@@ -1416,7 +1407,7 @@ public final class Stargate extends JavaPlugin {
         }
     }
 
-    private class SGThread implements Runnable {
+    private static class SGThread implements Runnable {
 
         @Override
         public void run() {
@@ -1473,13 +1464,11 @@ public final class Stargate extends JavaPlugin {
             }
             if (args[0].equalsIgnoreCase("reload")) {
                 // Deactivate portals
-                for (Portal p : activeList) {
-                    p.deactivate();
-                }
+                activeList.stream().forEach((p) -> p.deactivate());
+
                 // Close portals
-                for (Portal p : openList) {
-                    p.close(true);
-                }
+                openList.stream().forEach((p) -> p.close(true));
+
                 // Clear all lists
                 activeList.clear();
                 openList.clear();
