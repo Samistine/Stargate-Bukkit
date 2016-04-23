@@ -2,7 +2,7 @@ name: Stargate
 main: net.TheDgtl.Stargate.Stargate
 version: ${project.version}
 
-git_repo: https://github.com/Samistine/SimpleSort
+git_repo: https://github.com/Samistine/Stargate-Bukkit
 git_hash: ${git_hash}
 jenkins_build: ${BUILD_NUMBER}
 
