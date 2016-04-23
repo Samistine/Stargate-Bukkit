@@ -1,6 +1,6 @@
 name: Stargate
 main: net.TheDgtl.Stargate.Stargate
-version: ${project.version}
+version: ${project.version}-b${BUILD_NUMBER}
 
 git_repo: https://github.com/Samistine/Stargate-Bukkit
 git_hash: ${git_hash}
