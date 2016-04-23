@@ -1,6 +1,11 @@
 name: Stargate
 main: net.TheDgtl.Stargate.Stargate
-version: ${project.version}-Samistine-b${BUILD_NUMBER}
+version: ${project.version}
+
+git_repo: https://github.com/Samistine/SimpleSort
+git_hash: ${git_hash}
+jenkins_build: ${BUILD_NUMBER}
+
 description: Stargate mod for Bukkit
 author: Drakia
 website: http://www.thedgtl.net
