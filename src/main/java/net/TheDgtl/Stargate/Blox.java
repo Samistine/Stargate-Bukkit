@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 /**
  * Stargate - A portal plugin for Bukkit Copyright (C) 2011 Shaun (sturmeh)
  * Copyright (C) 2011 Dinnerbone Copyright (C) 2011, 2012 Steven "Drakia" Scott
- * <Contact@TheDgtl.net>
+ * <a href="mailto:Contact@TheDgtl.net">Contact@TheDgtl.net</a>
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,7 +21,7 @@ import org.bukkit.block.Block;
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  */
 public class Blox {
 
